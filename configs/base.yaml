@@ -1,0 +1,94 @@
+experiment:
+  name: "base"
+  seed: 42
+  output_dir: "outputs/base"
+
+device:
+  accelerator: "cuda" # "cuda" | "cpu" | "mps"
+  mixed_precision: true
+
+task:
+  mode: "classification" # "classification" | "embedding"
+  num_classes: 1000 # used for classification
+
+model:
+  backbone: "convnext_base" # timm model name
+  pretrained: true
+  img_size: 224
+  in_chans: 3
+  drop_rate: 0.0
+  drop_path_rate: 0.0
+
+  freeze_backbone: false # true -> freeze all backbone params
+  freeze_backbone_regex: "" # optional: freeze by regex on param names
+
+  head:
+    name: "linear" # "linear" | "mlp"
+    out_dim: 1000 # for classification: num_classes; for embedding: emb_dim
+    hidden_dim: 1024 # for mlp
+    dropout: 0.1
+
+data:
+  train_csv: "data/train.csv"
+  val_csv: "data/val.csv"
+  img_root: "data/images"
+  image_col: "path"
+  label_col: "label" # for embedding you can use "label" too
+  has_header: true
+
+  batch_size: 32
+  num_workers: 4
+  pin_memory: true
+
+augmentations:
+  train:
+  - name: "RandomResizedCrop"
+    size: 224
+    scale: [ 0.7, 1.0 ]
+  - name: "HorizontalFlip"
+    p: 0.5
+  - name: "ColorJitter"
+    p: 0.3
+    brightness: 0.2
+    contrast: 0.2
+    saturation: 0.2
+    hue: 0.1
+  - name: "ToTensor"
+  - name: "Normalize"
+    mean: [ 0.485, 0.456, 0.406 ]
+    std: [ 0.229, 0.224, 0.225 ]
+  val:
+  - name: "Resize"
+    size: 256
+  - name: "CenterCrop"
+    size: 224
+  - name: "ToTensor"
+  - name: "Normalize"
+    mean: [ 0.485, 0.456, 0.406 ]
+    std: [ 0.229, 0.224, 0.225 ]
+
+train:
+  epochs: 3
+  grad_clip_norm: 1.0
+  accumulation_steps: 1
+  log_every: 50
+
+optimizer:
+  name: "AdamW"
+  lr: 0.0003
+  weight_decay: 0.05
+  betas: [ 0.9, 0.999 ]
+
+scheduler:
+  name: "cosine" # "cosine" | "step" | "none"
+  warmup_epochs: 0
+  min_lr: 1e-6
+
+loss:
+  name: "cross_entropy" # "cross_entropy" | "cosine_embedding"
+  label_smoothing: 0.0
+
+eval:
+  metric: "accuracy_top1" # "accuracy_top1" | "none"
+  save_best: true
+  best_mode: "max" # "max" for accuracy; "min" for loss
