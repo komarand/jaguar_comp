@@ -26,7 +26,7 @@ class JaguarDataset(Dataset):
         num_neg = self.num_pairs - num_pos
 
         # Group by identity
-        id_to_imgs = self.df.groupby('identity')['image'].apply(list).to_dict()
+        id_to_imgs = self.df.groupby('ground_truth')['filename'].apply(list).to_dict()
         identities = list(id_to_imgs.keys())
 
         # Filter identities with at least 2 images for positive pairs

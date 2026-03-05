@@ -1,0 +1,39 @@
+# --- Данные (Dataset) ---
+# Игнорируем все изображения и CSV в папке с данными
+/kaggle/input/
+/data/
+*.jpg
+*.jpeg
+*.png
+*.csv
+
+# --- Веса моделей и кэш ---
+# Игнорируем обученные веса калибратора и скачанные модели
+*.joblib
+*.pkl
+*.pth
+*.onnx
+.cache/
+
+# --- Python / Окружение ---
+# Игнорируем виртуальное окружение, в котором мы лечили PIL и CUDA
+venv/
+.venv/
+env/
+__pycache__/
+*.py[cod]
+*$py.class
+
+# --- IDE (VS Code / PyCharm) ---
+.vscode/
+.idea/
+.ipynb_checkpoints/
+
+# --- Системные файлы ---
+.DS_Store
+Thumbs.db
+
+# --- Исключения ---
+# Если ты хочешь оставить sample_submission или структуру, 
+# можно разрешить конкретный файл, но обычно лучше всё держать локально
+# !sample_submission.csv
