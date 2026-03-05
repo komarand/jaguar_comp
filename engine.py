@@ -25,13 +25,13 @@ def get_local_matches(img_path1, img_path2):
     img2 = load_image(img_path2).to(models.device)
 
     with torch.no_grad():
-        with torch.autocast(device_type=models.device.type, dtype=torch.float16):
-            # Extract features with ALIKED
-            feats1 = models.local_extractor.extract(img1)
-            feats2 = models.local_extractor.extract(img2)
+        # Do not use autocast for ALIKED/LightGlue as it causes float16/float32 matmul conflicts
+        # Extract features with ALIKED
+        feats1 = models.local_extractor.extract(img1)
+        feats2 = models.local_extractor.extract(img2)
 
-            # Match features with LightGlue
-            matches01 = models.local_matcher({"image0": feats1, "image1": feats2})
+        # Match features with LightGlue
+        matches01 = models.local_matcher({"image0": feats1, "image1": feats2})
 
     matches01_unbatched = rbd(matches01)
     matches = matches01_unbatched['matches']
