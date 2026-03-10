@@ -1,0 +1,22 @@
+apiVersion: batch/v1
+kind: Job
+metadata:
+  name: ml-experiment-{id}
+spec:
+  template:
+    spec:
+      containers:
+      - name: worker
+        image: your-registry/ml-worker:latest
+        volumeMounts:
+        - name: code-volume
+          mountPath: /app/agent_code.py
+          subPath: agent_code.py
+        resources:
+          limits:
+            nvidia.com/gpu: 1
+      volumes:
+      - name: code-volume
+        configMap:
+          name: code-{id}
+      restartPolicy: Never
